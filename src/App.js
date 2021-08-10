@@ -34,6 +34,11 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== id)) //então a gente filtra pegando as tasks que não tem esse id, e so mostra as tasks com id diferente desse
   }
 
+  //Toggle reminder - função para quando dar doubleClick na task mudar para ativar ou desativar o reminder
+  const toggleReminder = (id) => {
+    setTasks(tasks.map((task) => task.id === id ? { ...task, reminder: !task.reminder } : task)) //"...tasks" copia tudo igual de task, menos reminder, que vira o oposto do que era
+  }
+ 
   return (
     //Não pode fazer tasks.push() por exemplo, porque state é imutável, não pode mudar diretamente
     //por isso foi declarado acima como const [tasks, setTasks], para mudar usando apenas setTasks()
@@ -41,7 +46,7 @@ function App() {
     <div className="container">
       <Header />  {/*poderia passar um valor para props title aqui, tipo title='Hello'*/}
       {tasks.length > 0 ? (
-        <Tasks tasks={tasks} onDelete={deleteTask}/>) //passar props tasks declarada acima em const [tasks, setTasks] = useState(...)
+        <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder}/>) //passar props tasks declarada acima em const [tasks, setTasks] = useState(...)
         : ('No tasks to show') 
       }
     </div>
