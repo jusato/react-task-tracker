@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react"
+import { BrowserRouter as Router, Route} from 'react-router-dom'
 import Header from './components/Header'
 import Tasks from './components/Tasks'
 import AddTask from './components/AddTask'
+import Footer from './components/Footer'
+import About from './components/About'
 
 function App() {
   const [showAddTask, setShowAddTask] = useState(false) //dentro do useState() coloca o valor default, ai depois vai poder mudar chamando setFunction()
@@ -10,6 +13,9 @@ function App() {
 
   //piece of state (tasks) and function to update the state (setTasks)
   const [tasks, setTasks] = useState([]) //valor default: vetor vazio (sem tasks) 
+  //Não pode fazer tasks.push() por exemplo, porque state é imutável, não pode mudar diretamente
+    //por isso foi declarado acima como const [tasks, setTasks], para mudar usando apenas setTasks()
+    //Exemplo: setTasks([...])
 
   //-----------
   //Vamos usar useEffect() para pegar os dados do JSON server (os que foram colocados em db.json)
@@ -81,20 +87,25 @@ function App() {
   }
  
   return (
-    //Não pode fazer tasks.push() por exemplo, porque state é imutável, não pode mudar diretamente
-    //por isso foi declarado acima como const [tasks, setTasks], para mudar usando apenas setTasks()
-    //Exemplo: setTasks([...])
-    <div className="container">
-      <Header 
-        onAdd={() => setShowAddTask(!showAddTask)} //onAdd vai ser passado para Header ./components/Header.js como uma prop. Além disso o "valor" dessa prop é uma função que muda o valor do showAddTask para o contrário do que está quando chamada
-        showAdd={showAddTask} //também vamos passar para Header o valor de showAddTask. Para isso é só passar uma nova prop chamada showAdd, que vai ter valor igual a showAddTask
-      /> 
-      {showAddTask && <AddTask onAdd={addTask}/>}     {/*Esse é um jeito de fazer um ternary sem o else (se showAddTask = true, <AddTask/>. Senão, nada*/}
-      {tasks.length > 0 ? (
-        <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder}/>) //passar props tasks declarada acima em const [tasks, setTasks] = useState(...)
-        : ('No tasks to show') 
-      }
-    </div>
+    <Router>
+      <div className="container">
+        <Header 
+          onAdd={() => setShowAddTask(!showAddTask)} //onAdd vai ser passado para Header ./components/Header.js como uma prop. Além disso o "valor" dessa prop é uma função que muda o valor do showAddTask para o contrário do que está quando chamada
+          showAdd={showAddTask} //também vamos passar para Header o valor de showAddTask. Para isso é só passar uma nova prop chamada showAdd, que vai ter valor igual a showAddTask
+        /> 
+        <Route path='/' exact render={(props) => ( //no path '/' (home) vamos ver as tasks
+          <>
+            {showAddTask && <AddTask onAdd={addTask}/>}     {/*Esse é um jeito de fazer um ternary sem o else (se showAddTask = true, <AddTask/>. Senão, nada*/}
+            {tasks.length > 0 ? (
+              <Tasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder}/>) //passar props tasks declarada acima em const [tasks, setTasks] = useState(...)
+              : ('No tasks to show') 
+            }
+          </>
+        )} />
+        <Route path='/about' component={About} />   {/*No path '/about' vamos ver só o componente About*/}
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
